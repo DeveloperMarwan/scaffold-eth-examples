@@ -19,14 +19,15 @@ import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import WalletLink from "walletlink";
 import Web3Modal from "web3modal";
 import "./App.css";
-import { Account, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch } from "./components";
-import { INFURA_ID, NETWORK, NETWORKS, ALCHEMY_KEY } from "./constants";
+import { Account, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch, Events } from "./components";
+import { INFURA_ID, NETWORK, NETWORKS, ALCHEMY_KEY, GOVERNOR_ABI } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor } from "./helpers";
 // import Hints from "./Hints";
 import { ExampleUI, Hints, Subgraph } from "./views";
+import { useExternalContractLoader } from "./hooks";
 
 const { ethers } = require("ethers");
 /*
@@ -438,6 +439,28 @@ function App(props) {
     );
   }
 
+  const myGovAddress = useContractReader(readContracts, "VoteGovernorFactory", "getGovernorAddress", [address]);
+  if (DEBUG) console.log("✅ myGovAddress:", myGovAddress);
+
+  const theGovContract = useExternalContractLoader(injectedProvider, myGovAddress, GOVERNOR_ABI);
+  if (DEBUG) console.log("✅ theGovContract: ", theGovContract);
+
+  let theGovContractDisplay = "";
+  if (myGovAddress != ethers.constants.AddressZero) {
+    theGovContractDisplay = (
+      <Contract
+        customContract={theGovContract}
+        chainId={selectedChainId}
+        signer={userSigner}
+        provider={injectedProvider}
+        price={price}
+        blockExplorer={blockExplorer}
+      />
+    );
+  } else {
+    theGovContractDisplay = <div>No Governor instance found....create one</div>;
+  }
+
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
@@ -452,61 +475,25 @@ function App(props) {
               }}
               to="/"
             >
-              YourContract
+              VoteGovernorFactory
             </Link>
           </Menu.Item>
-          <Menu.Item key="/hints">
+          <Menu.Item key="/mygovernor">
             <Link
               onClick={() => {
-                setRoute("/hints");
+                setRoute("mygovernor");
               }}
-              to="/hints"
+              to="/mygovernor"
             >
-              Hints
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/exampleui">
-            <Link
-              onClick={() => {
-                setRoute("/exampleui");
-              }}
-              to="/exampleui"
-            >
-              ExampleUI
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/mainnetdai">
-            <Link
-              onClick={() => {
-                setRoute("/mainnetdai");
-              }}
-              to="/mainnetdai"
-            >
-              Mainnet DAI
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/subgraph">
-            <Link
-              onClick={() => {
-                setRoute("/subgraph");
-              }}
-              to="/subgraph"
-            >
-              Subgraph
+              MyGovernor
             </Link>
           </Menu.Item>
         </Menu>
 
         <Switch>
           <Route exact path="/">
-            {/*
-                🎛 this scaffolding is full of commonly used components
-                this <Contract/> component will automatically parse your ABI
-                and give you a form to interact with it locally
-            */}
-
             <Contract
-              name="YourContract"
+              name="VoteGovernorFactory"
               price={price}
               signer={userSigner}
               provider={localProvider}
@@ -514,58 +501,17 @@ function App(props) {
               blockExplorer={blockExplorer}
               contractConfig={contractConfig}
             />
-          </Route>
-          <Route path="/hints">
-            <Hints
-              address={address}
-              yourLocalBalance={yourLocalBalance}
-              mainnetProvider={mainnetProvider}
-              price={price}
-            />
-          </Route>
-          <Route path="/exampleui">
-            <ExampleUI
-              address={address}
-              userSigner={userSigner}
-              mainnetProvider={mainnetProvider}
+            <Events
+              contracts={readContracts}
+              contractName="VoteGovernorFactory"
+              eventName="GovernorCreated"
               localProvider={localProvider}
-              yourLocalBalance={yourLocalBalance}
-              price={price}
-              tx={tx}
-              writeContracts={writeContracts}
-              readContracts={readContracts}
-              purpose={purpose}
-            />
-          </Route>
-          <Route path="/mainnetdai">
-            <Contract
-              name="DAI"
-              customContract={mainnetContracts && mainnetContracts.contracts && mainnetContracts.contracts.DAI}
-              signer={userSigner}
-              provider={mainnetProvider}
-              address={address}
-              blockExplorer="https://etherscan.io/"
-              contractConfig={contractConfig}
-              chainId={1}
-            />
-            {/*
-            <Contract
-              name="UNI"
-              customContract={mainnetContracts && mainnetContracts.contracts && mainnetContracts.contracts.UNI}
-              signer={userSigner}
-              provider={mainnetProvider}
-              address={address}
-              blockExplorer="https://etherscan.io/"
-            />
-            */}
-          </Route>
-          <Route path="/subgraph">
-            <Subgraph
-              subgraphUri={props.subgraphUri}
-              tx={tx}
-              writeContracts={writeContracts}
               mainnetProvider={mainnetProvider}
+              startBlock={1}
             />
+          </Route>
+          <Route exact path="/mygovernor">
+            {theGovContractDisplay}
           </Route>
         </Switch>
       </BrowserRouter>
