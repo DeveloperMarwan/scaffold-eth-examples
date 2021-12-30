@@ -2,22 +2,49 @@
 
 const { ethers } = require("hardhat");
 
-const localChainId = "31337";
+// const localChainId = "31337";
+// const localChainId = "43112";
 
 module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
+  console.log("chainId: ", chainId);
 
-  await deploy("YourContract", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+  await deploy("SalientYachtsReward", {
     from: deployer,
-    // args: [ "Hello", ethers.utils.parseEther("1.5") ],
     log: true,
   });
+  console.log("After await deploy SalientYachtsReward...");
+  const salientYachtsReward = await ethers.getContract(
+    "SalientYachtsReward",
+    deployer
+  );
+  console.log("After const salientYachtsReward =...");
+
+  await deploy("SalientYachtsNFT", {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+    from: deployer,
+    args: [salientYachtsReward.address],
+    log: true,
+  });
+  console.log("After await deploy SalientYachtsNFT...");
 
   // Getting a previously deployed contract
-  const YourContract = await ethers.getContract("YourContract", deployer);
+  const salientYachtsNFTContract = await ethers.getContract(
+    "SalientYachtsNFT",
+    deployer
+  );
+  console.log("After const salientYachtsNFTContract =...");
+
+  // mint reward tokens for the NFT - 240 tokens per year -> four years -> for 6000 NFT's
+  await salientYachtsReward.mint(
+    salientYachtsNFTContract.address,
+    ethers.utils.parseEther(240 * 4 * 6000 + "")
+  );
+
+  await salientYachtsNFTContract.toggleSaleActive();
+  console.log("After salientYachtsNFTContract.toggleSaleActive()...");
   /*  await YourContract.setPurpose("Hello");
   
     To take ownership of yourContract using the ownable library uncomment next line and add the 
@@ -53,12 +80,14 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
   // Verify your contracts with Etherscan
   // You don't want to verify on localhost
+  /*
   if (chainId !== localChainId) {
     await run("verify:verify", {
-      address: YourContract.address,
-      contract: "contracts/YourContract.sol:YourContract",
+      address: salientYachtsNFTContract.address,
+      contract: "contracts/SalientYachtsNFT.sol:SalientYachtsNFT",
       contractArguments: [],
     });
   }
+  */
 };
-module.exports.tags = ["YourContract"];
+module.exports.tags = ["salientYachtsNFTContract"];

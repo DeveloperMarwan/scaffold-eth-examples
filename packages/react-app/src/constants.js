@@ -194,3 +194,235 @@ export const NETWORK = chainId => {
     }
   }
 };
+
+export const SALIENT_YAGHT_STREAM_ABI = [
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "streamId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "who",
+        type: "address",
+      },
+    ],
+    name: "balanceOf",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "balance",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "streamIdList",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address",
+        name: "who",
+        type: "address",
+      }
+    ],
+    name: "balanceOfStreams",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "totalBalance",
+        type: "uint256",
+      }
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "streamId",
+        type: "uint256",
+      },
+    ],
+    name: "cancelStream",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "streamId",
+        type: "uint256",
+      },
+    ],
+    name: "deltaOf",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "delta",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "streamId",
+        type: "uint256",
+      },
+    ],
+    name: "getStream",
+    outputs: [
+      {
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "deposit",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "tokenAddress",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "startTime",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "stopTime",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "remainingBalance",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "ratePerSecond",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "nextStreamId",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "streamId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "withdrawFromStream",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "streamIdList",
+        type: "uint256[]",
+      }
+    ],
+    name: "withdrawFromStreams",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      }
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];

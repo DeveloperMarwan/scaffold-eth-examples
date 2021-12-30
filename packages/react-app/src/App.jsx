@@ -20,13 +20,12 @@ import WalletLink from "walletlink";
 import Web3Modal from "web3modal";
 import "./App.css";
 import { Account, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch } from "./components";
-import { INFURA_ID, NETWORK, NETWORKS, ALCHEMY_KEY } from "./constants";
+import { INFURA_ID, NETWORK, NETWORKS, ALCHEMY_KEY, SALIENT_YAGHT_STREAM_ABI } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor } from "./helpers";
-// import Hints from "./Hints";
-import { ExampleUI, Hints, Subgraph } from "./views";
+import { useExternalContractLoader } from "./hooks";
 
 const { ethers } = require("ethers");
 /*
@@ -49,10 +48,12 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const targetNetwork = NETWORKS.fujiAvalanche; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+// const targetNetwork = NETWORKS.localhost;
 
 // 😬 Sorry for all the console logging
-const DEBUG = true;
+const DEBUG = false;
+// const DEBUG = false;
 const NETWORKCHECK = true;
 
 // 🛰 providers
@@ -438,6 +439,23 @@ function App(props) {
     );
   }
 
+  const streamAddress = useContractReader(readContracts, "SalientYachtsNFT", "streamContract");
+  if (DEBUG) console.log("✅ streamAddress:", streamAddress);
+
+  const theExternalContract = useExternalContractLoader(injectedProvider, streamAddress, SALIENT_YAGHT_STREAM_ABI);
+  if (DEBUG) console.log("✅ theExternalContract: ", theExternalContract);
+
+  let streamDisplay = (
+    <Contract
+      customContract={theExternalContract}
+      chainId={selectedChainId}
+      signer={userSigner}
+      provider={injectedProvider}
+      price={price}
+      blockExplorer={blockExplorer}
+    />
+  );
+
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
@@ -452,47 +470,27 @@ function App(props) {
               }}
               to="/"
             >
-              YourContract
+              SalientYachtsNFT
             </Link>
           </Menu.Item>
-          <Menu.Item key="/hints">
+          <Menu.Item key="/rewardstream">
             <Link
               onClick={() => {
-                setRoute("/hints");
+                setRoute("/rewardstream");
               }}
-              to="/hints"
+              to="/rewardstream"
             >
-              Hints
+              SalientYachtsStream
             </Link>
           </Menu.Item>
-          <Menu.Item key="/exampleui">
+          <Menu.Item key="/rewardtoken">
             <Link
               onClick={() => {
-                setRoute("/exampleui");
+                setRoute("/rewardtoken");
               }}
-              to="/exampleui"
+              to="/rewardtoken"
             >
-              ExampleUI
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/mainnetdai">
-            <Link
-              onClick={() => {
-                setRoute("/mainnetdai");
-              }}
-              to="/mainnetdai"
-            >
-              Mainnet DAI
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/subgraph">
-            <Link
-              onClick={() => {
-                setRoute("/subgraph");
-              }}
-              to="/subgraph"
-            >
-              Subgraph
+              SalientYachtsReward
             </Link>
           </Menu.Item>
         </Menu>
@@ -506,7 +504,7 @@ function App(props) {
             */}
 
             <Contract
-              name="YourContract"
+              name="SalientYachtsNFT"
               price={price}
               signer={userSigner}
               provider={localProvider}
@@ -515,56 +513,16 @@ function App(props) {
               contractConfig={contractConfig}
             />
           </Route>
-          <Route path="/hints">
-            <Hints
-              address={address}
-              yourLocalBalance={yourLocalBalance}
-              mainnetProvider={mainnetProvider}
-              price={price}
-            />
-          </Route>
-          <Route path="/exampleui">
-            <ExampleUI
-              address={address}
-              userSigner={userSigner}
-              mainnetProvider={mainnetProvider}
-              localProvider={localProvider}
-              yourLocalBalance={yourLocalBalance}
-              price={price}
-              tx={tx}
-              writeContracts={writeContracts}
-              readContracts={readContracts}
-              purpose={purpose}
-            />
-          </Route>
-          <Route path="/mainnetdai">
+          <Route path="/rewardstream">{streamDisplay}</Route>
+          <Route exact path="/rewardtoken">
             <Contract
-              name="DAI"
-              customContract={mainnetContracts && mainnetContracts.contracts && mainnetContracts.contracts.DAI}
+              name="SalientYachtsReward"
+              price={price}
               signer={userSigner}
-              provider={mainnetProvider}
+              provider={localProvider}
               address={address}
-              blockExplorer="https://etherscan.io/"
+              blockExplorer={blockExplorer}
               contractConfig={contractConfig}
-              chainId={1}
-            />
-            {/*
-            <Contract
-              name="UNI"
-              customContract={mainnetContracts && mainnetContracts.contracts && mainnetContracts.contracts.UNI}
-              signer={userSigner}
-              provider={mainnetProvider}
-              address={address}
-              blockExplorer="https://etherscan.io/"
-            />
-            */}
-          </Route>
-          <Route path="/subgraph">
-            <Subgraph
-              subgraphUri={props.subgraphUri}
-              tx={tx}
-              writeContracts={writeContracts}
-              mainnetProvider={mainnetProvider}
             />
           </Route>
         </Switch>
@@ -589,6 +547,7 @@ function App(props) {
       </div>
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
+
       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
         <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
@@ -616,14 +575,11 @@ function App(props) {
 
         <Row align="middle" gutter={[4, 4]}>
           <Col span={24}>
-            {
-              /*  if the local provider has a signer, let's show the faucet:  */
-              faucetAvailable ? (
-                <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
-              ) : (
-                ""
-              )
-            }
+            {faucetAvailable ? (
+              <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
+            ) : (
+              ""
+            )}
           </Col>
         </Row>
       </div>
