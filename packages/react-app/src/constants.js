@@ -620,3 +620,19 @@ export const GOVERNOR_ABI = [
     type: "function",
   },
 ];
+
+export const VOTE_TOKEN_ABI = [
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "delegatee",
+        type: "address",
+      },
+    ],
+    name: "delegate",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];

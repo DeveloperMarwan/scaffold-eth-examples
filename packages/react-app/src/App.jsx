@@ -20,7 +20,7 @@ import WalletLink from "walletlink";
 import Web3Modal from "web3modal";
 import "./App.css";
 import { Account, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch, Events } from "./components";
-import { INFURA_ID, NETWORK, NETWORKS, ALCHEMY_KEY, GOVERNOR_ABI } from "./constants";
+import { INFURA_ID, NETWORK, NETWORKS, ALCHEMY_KEY, GOVERNOR_ABI, VOTE_TOKEN_ABI } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
@@ -50,10 +50,12 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+// const targetNetwork = NETWORKS.localhost;
+const targetNetwork = NETWORKS.fujiAvalanche;
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
+// const DEBUG = false;
 const NETWORKCHECK = true;
 
 // 🛰 providers
@@ -461,6 +463,39 @@ function App(props) {
     theGovContractDisplay = <div>No Governor instance found....create one</div>;
   }
 
+  const [voteTokenAddress, setVoteTokenAddress] = useState();
+  useEffect(() => {
+    async function getVoteTokenAddress() {
+      if (myGovAddress != ethers.constants.AddressZero) {
+        const newAddress = await theGovContract.png();
+        setVoteTokenAddress(newAddress);
+      } else {
+        setVoteTokenAddress(ethers.constants.AddressZero);
+      }
+    }
+    getVoteTokenAddress();
+  }, [theGovContract]);
+  if (DEBUG) console.log("✅ voteTokenAddress: ", voteTokenAddress);
+
+  const theVoteTokenContract = useExternalContractLoader(injectedProvider, voteTokenAddress, VOTE_TOKEN_ABI);
+  if (DEBUG) console.log("✅ theVoteTokenContract: ", theVoteTokenContract);
+
+  let theVoteTokenContractDisplay = "";
+  if (voteTokenAddress != ethers.constants.AddressZero) {
+    theVoteTokenContractDisplay = (
+      <Contract
+        customContract={theVoteTokenContract}
+        chainId={selectedChainId}
+        signer={userSigner}
+        provider={injectedProvider}
+        price={price}
+        blockExplorer={blockExplorer}
+      />
+    );
+  } else {
+    theVoteTokenContractDisplay = <div>Contract not initialized yet</div>;
+  }
+
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
@@ -488,6 +523,16 @@ function App(props) {
               MyGovernor
             </Link>
           </Menu.Item>
+          <Menu.Item key="/votetoken">
+            <Link
+              onClick={() => {
+                setRoute("votetoken");
+              }}
+              to="/votetoken"
+            >
+              VoteToken
+            </Link>
+          </Menu.Item>
         </Menu>
 
         <Switch>
@@ -513,6 +558,9 @@ function App(props) {
           <Route exact path="/mygovernor">
             {theGovContractDisplay}
           </Route>
+          <Route exact path="/votetoken">
+            {theVoteTokenContractDisplay}
+          </Route>
         </Switch>
       </BrowserRouter>
 
@@ -535,6 +583,7 @@ function App(props) {
       </div>
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
+      {/* 
       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
         <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
@@ -563,7 +612,6 @@ function App(props) {
         <Row align="middle" gutter={[4, 4]}>
           <Col span={24}>
             {
-              /*  if the local provider has a signer, let's show the faucet:  */
               faucetAvailable ? (
                 <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
               ) : (
@@ -573,6 +621,7 @@ function App(props) {
           </Col>
         </Row>
       </div>
+      */}
     </div>
   );
 }

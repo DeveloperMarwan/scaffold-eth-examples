@@ -2,12 +2,13 @@
 
 const { ethers } = require("hardhat");
 
-const localChainId = "31337";
+// const localChainId = "31337";
 
 module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
+  console.log("chainId: ", chainId);
 
   await deploy("VoteToken", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
@@ -18,6 +19,12 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
   // Getting a previously deployed contract
   const voteToken = await ethers.getContract("VoteToken", deployer);
+  // transfer 20 vote tokens
+  await voteToken.transfer(
+    "0x7C04681be730c2f418884036b5D9Bb94573d71B1",
+    "20000000000000000000"
+  );
+
   await deploy("VoteGovernorFactory", {
     from: deployer,
     args: [voteToken.address],
@@ -62,6 +69,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
   // Verify your contracts with Etherscan
   // You don't want to verify on localhost
+  /*
   if (chainId !== localChainId) {
     await run("verify:verify", {
       address: voteGovernorFactory.address,
@@ -69,5 +77,6 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
       contractArguments: [],
     });
   }
+  */
 };
 module.exports.tags = ["voteToken", "voteGovernorFactory"];
