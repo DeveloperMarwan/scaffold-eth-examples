@@ -3,8 +3,7 @@
 pragma solidity ^0.8.2;
 
 contract VoteGovernorAlpha {
-    /// @notice The name of this contract
-    //string public constant name = "Pangolin Governor Alpha";
+    // @notice The name of this contract
     string private name;
     uint256 private votingDelay;
     uint256 private votingPeriod;
@@ -15,93 +14,93 @@ contract VoteGovernorAlpha {
         return name;
     }
 
-    /// @notice The number of votes required in order for a voter to become a proposer
+    // @notice The number of votes required in order for a voter to become a proposer
     function getProposalThreshold() public view returns (uint256) { return proposalThreshold; }
 
-    /// @notice The number of votes required in order for a voter to vote on a proposal
+    // @notice The number of votes required in order for a voter to vote on a proposal
     function getVotingThreshold() public view returns (uint256) { return votingThreshold; }
 
-    /// @notice The maximum number of actions that can be included in a proposal
+    // @notice The maximum number of actions that can be included in a proposal
     function proposalMaxOperations() public pure returns (uint) { return 10; } // 10 actions
 
-    /// @notice The delay before voting on a proposal may take place, once proposed
+    // @notice The delay before voting on a proposal may take place, once proposed
     function getVotingDelay() public view returns (uint256) { return votingDelay; }
 
-    /// @notice The duration of voting on a proposal, in blocks
+    // @notice The duration of voting on a proposal, in blocks
     function getVotingPeriod() public view returns (uint256) { return votingPeriod; }
 
-    /// @notice The address of the Pangolin Protocol Timelock
+    // @notice The address of the Pangolin Protocol Timelock
     VoteTimelockInterface public timelock;
 
-    /// @notice The address of the Pangolin governance token
+    // @notice The address of the Pangolin governance token
     VoteTokenInterface public png;
 
-    /// @notice The address of the Governor Guardian
+    // @notice The address of the Governor Guardian
     address public guardian;
 
-    /// @notice The total number of proposals
+    // @notice The total number of proposals
     uint256 public proposalCount;
 
     struct Proposal {
-        /// @notice Unique id for looking up a proposal
+        // @notice Unique id for looking up a proposal
         uint256 id;
 
-        /// @notice Creator of the proposal
+        // @notice Creator of the proposal
         address proposer;
 
-        /// @notice The timestamp that the proposal will be available for execution, set once the vote succeeds
+        // @notice The timestamp that the proposal will be available for execution, set once the vote succeeds
         uint256 eta;
 
-        /// @notice the ordered list of target addresses for calls to be made
+        // @notice the ordered list of target addresses for calls to be made
         address[] targets;
 
-        /// @notice The ordered list of values (i.e. msg.value) to be passed to the calls to be made
+        // @notice The ordered list of values (i.e. msg.value) to be passed to the calls to be made
         uint[] values;
 
-        /// @notice The ordered list of function signatures to be called
+        // @notice The ordered list of function signatures to be called
         string[] signatures;
 
-        /// @notice The ordered list of calldata to be passed to each call
+        // @notice The ordered list of calldata to be passed to each call
         bytes[] calldatas;
 
-        /// @notice The timestamp at which voting begins: holders must delegate their votes prior to this time
+        // @notice The timestamp at which voting begins: holders must delegate their votes prior to this time
         uint256 startTime;
 
-        /// @notice The timestamp at which voting ends: votes must be cast prior to this block
+        // @notice The timestamp at which voting ends: votes must be cast prior to this block
         uint256 endTime;
 
-        /// @notice The block at which voting began: holders must have delegated their votes prior to this block
+        // @notice The block at which voting began: holders must have delegated their votes prior to this block
         uint256 startBlock;
 
-        /// @notice Current number of votes in favor of this proposal
+        // @notice Current number of votes in favor of this proposal
         uint256 forVotes;
 
-        /// @notice Current number of votes in opposition to this proposal
+        // @notice Current number of votes in opposition to this proposal
         uint256 againstVotes;
 
-        /// @notice Flag marking whether the proposal has been canceled
+        // @notice Flag marking whether the proposal has been canceled
         bool canceled;
 
-        /// @notice Flag marking whether the proposal has been executed
+        // @notice Flag marking whether the proposal has been executed
         bool executed;
 
-        /// @notice Receipts of ballots for the entire set of voters
+        // @notice Receipts of ballots for the entire set of voters
         mapping (address => Receipt) receipts;
     }
 
-    /// @notice Ballot receipt record for a voter
+    // @notice Ballot receipt record for a voter
     struct Receipt {
-        /// @notice Whether or not a vote has been cast
+        // @notice Whether or not a vote has been cast
         bool hasVoted;
 
-        /// @notice Whether or not the voter supports the proposal
+        // @notice Whether or not the voter supports the proposal
         bool support;
 
-        /// @notice The number of votes the voter had, which were cast
+        // @notice The number of votes the voter had, which were cast
         uint96 votes;
     }
 
-    /// @notice Possible states that a proposal may be in
+    // @notice Possible states that a proposal may be in
     enum ProposalState {
         Pending,
         Active,
@@ -113,34 +112,34 @@ contract VoteGovernorAlpha {
         Executed
     }
 
-    /// @notice The official record of all proposals ever proposed
+    // @notice The official record of all proposals ever proposed
     mapping (uint256 => Proposal) public proposals;
 
-    /// @notice The latest proposal for each proposer
+    // @notice The latest proposal for each proposer
     mapping (address => uint) public latestProposalIds;
 
-    /// @notice The EIP-712 typehash for the contract's domain
+    // @notice The EIP-712 typehash for the contract's domain
     bytes32 public constant DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)");
 
-    /// @notice The EIP-712 typehash for the ballot struct used by the contract
+    // @notice The EIP-712 typehash for the ballot struct used by the contract
     bytes32 public constant BALLOT_TYPEHASH = keccak256("Ballot(uint256 proposalId,bool support)");
 
-    /// @notice An event emitted when a new proposal is created
+    // @notice An event emitted when a new proposal is created
     event ProposalCreated(address govAddress, uint256 proposalId, address proposer, address[] targets, uint[] values, string[] signatures, bytes[] calldatas, uint256 startTime, uint256 endTime, string description);
 
-    /// @notice An event emitted when the first vote is cast in a proposal
+    // @notice An event emitted when the first vote is cast in a proposal
     event StartBlockSet(address govAddress, uint256 proposalId, uint256 startBlock);
 
-    /// @notice An event emitted when a vote has been cast on a proposal
+    // @notice An event emitted when a vote has been cast on a proposal
     event VoteCast(address govAddress, address voter, uint256 proposalId, bool support, uint256 votes);
 
-    /// @notice An event emitted when a proposal has been canceled
+    // @notice An event emitted when a proposal has been canceled
     event ProposalCanceled(address govAddress, uint256 proposalId);
 
-    /// @notice An event emitted when a proposal has been queued in the Timelock
+    // @notice An event emitted when a proposal has been queued in the Timelock
     event ProposalQueued(address govAddress, uint256 proposalId, uint256 eta);
 
-    /// @notice An event emitted when a proposal has been executed in the Timelock
+    // @notice An event emitted when a proposal has been executed in the Timelock
     event ProposalExecuted(address govAddress, uint256 proposalId);
 
     constructor(string memory _name, address _voteTimelock, address _voteToken, address _guardian, uint256 _votingDelay, 

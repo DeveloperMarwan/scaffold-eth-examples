@@ -4,7 +4,6 @@ pragma solidity ^0.8.2;
 import "./VoteTimelock.sol";
 import "./VoteGovernorAlpha.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-//import "hardhat/console.sol";
 
 contract VoteGovernorFactory is Ownable {
     event GovernorCreated(address indexed govOwner, address govAddress, string govName);
