@@ -48,7 +48,7 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS.fujiAvalanche; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const targetNetwork = NETWORKS.fujiAvalanche;
 // const targetNetwork = NETWORKS.localhost;
 
 // 😬 Sorry for all the console logging
@@ -547,7 +547,7 @@ function App(props) {
       </div>
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
-
+      {/*      
       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
         <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
@@ -583,6 +583,7 @@ function App(props) {
           </Col>
         </Row>
       </div>
+      */ }
     </div>
   );
 }

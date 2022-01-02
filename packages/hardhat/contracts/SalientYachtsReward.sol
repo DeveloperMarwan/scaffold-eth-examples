@@ -16,16 +16,3 @@ contract SalientYachtsReward is ERC20, AccessControl {
         _mint(to, amount);
     }
 }
-
-/*
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-
-contract SalientYachtsReward is ERC20Burnable, Ownable {
-    uint256 private TEN_YEARS = 315569520; //10 years -> 315569520 seconds
-
-    constructor(address _tokenOwner) ERC20("Salient Yachts Reward", "WIND") {
-        _mint(_tokenOwner, 14400 * (10 ** uint256(decimals())) * TEN_YEARS);
-    }
-}
-*/
