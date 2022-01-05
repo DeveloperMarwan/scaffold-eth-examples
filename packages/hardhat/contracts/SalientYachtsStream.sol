@@ -300,7 +300,7 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
     }
 
     function withdrawFromStreams(uint256[] memory streamIdList) external nonReentrant returns (bool) {
-        require(streamIdList.length > 0, "Stream id list is ampty");
+        require(streamIdList.length > 0, "Stream id list is empty");
         require(streamIdList.length <= 20, "Can only withdraw from 20 streams at a time");
         uint256 totalTokenWithdrawal;
         address streamTokenAddr;
