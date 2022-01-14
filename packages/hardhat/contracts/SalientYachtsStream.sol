@@ -20,6 +20,7 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
         address sender;
         address tokenAddress;
         bool    isEntity;
+        uint256 nftTokenId;
     }
 
     /**
@@ -66,6 +67,7 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
         uint256 indexed streamId,
         address indexed sender,
         address indexed recipient,
+        uint256 nftTokenId,
         uint256 deposit,
         address tokenAddress,
         uint256 startTime,
@@ -86,6 +88,7 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
         uint256 indexed streamId,
         address indexed sender,
         address indexed recipient,
+        uint256 nftTokenId,
         uint256 senderBalance,
         uint256 recipientBalance
     );
@@ -119,7 +122,8 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
             uint256 startTime,
             uint256 stopTime,
             uint256 remainingBalance,
-            uint256 ratePerSecond
+            uint256 ratePerSecond,
+            uint256 nftTokenId
         )
     {
         sender = streams[streamId].sender;
@@ -130,6 +134,7 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
         stopTime = streams[streamId].stopTime;
         remainingBalance = streams[streamId].remainingBalance;
         ratePerSecond = streams[streamId].ratePerSecond;
+        nftTokenId = streams[streamId].nftTokenId;
     }
 
     /**
@@ -216,55 +221,58 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
      *  Throws if the next stream id calculation has a math error.
      *  Throws if the contract is not allowed to transfer enough tokens.
      *  Throws if there is a token transfer failure.
-     * @param recipient The address towards which the money is streamed.
-     * @param deposit The amount of money to be streamed.
-     * @param tokenAddress The ERC20 token to use as streaming currency.
-     * @param startTime The unix timestamp for when the stream starts.
-     * @param stopTime The unix timestamp for when the stream stops.
+     * @param _recipient The address towards which the money is streamed.
+     * @param _deposit The amount of money to be streamed.
+     * @param _tokenAddress The ERC20 token to use as streaming currency.
+     * @param _startTime The unix timestamp for when the stream starts.
+     * @param _stopTime The unix timestamp for when the stream stops.
+     * @param _nftTokenId the token Id of the NFT for which this stream is being created.
      * @return The uint256 id of the newly created stream.
      */
-    function createStream(address _sender, address recipient, uint256 deposit, address tokenAddress, uint256 startTime, uint256 stopTime)
+    function createStream(address _sender, address _recipient, uint256 _deposit, address _tokenAddress, uint256 _startTime, 
+            uint256 _stopTime, uint256 _nftTokenId)
         public
         onlyOwner 
         returns (uint256)
     {
-        require(recipient != address(0x00), "stream to the zero address");
-        require(recipient != address(this), "stream to the contract itself");
-        require(recipient != _sender, "stream to the caller");
-        require(deposit > 0, "deposit is zero");
-        require(startTime >= block.timestamp, "start time before block.timestamp");
-        require(stopTime > startTime, "stop time before the start time");
+        require(_recipient != address(0x00), "stream to the zero address");
+        require(_recipient != address(this), "stream to the contract itself");
+        require(_recipient != _sender, "stream to the caller");
+        require(_deposit > 0, "deposit is zero");
+        require(_startTime >= block.timestamp, "start time before block.timestamp");
+        require(_stopTime > _startTime, "stop time before the start time");
 
         CreateStreamLocalVars memory vars;
-        vars.duration = stopTime - startTime;
+        vars.duration = _stopTime - _startTime;
 
         /* Without this, the rate per second would be zero. */
-        require(deposit >= vars.duration, "deposit smaller than time delta");
+        require(_deposit >= vars.duration, "deposit smaller than time delta");
 
         /* This condition avoids dealing with remainders */
-        require(deposit % vars.duration == 0, "deposit not multiple of time delta");
+        require(_deposit % vars.duration == 0, "deposit not multiple of time delta");
 
-        vars.ratePerSecond = deposit / vars.duration;
+        vars.ratePerSecond = _deposit / vars.duration;
 
         /* Create and store the stream object. */
         uint256 streamId = nextStreamId;
         streams[streamId] = Stream({
-            remainingBalance: deposit,
-            deposit: deposit,
+            remainingBalance: _deposit,
+            deposit: _deposit,
             isEntity: true,
             ratePerSecond: vars.ratePerSecond,
-            recipient: recipient,
+            recipient: _recipient,
             sender: _sender,
-            startTime: startTime,
-            stopTime: stopTime,
-            tokenAddress: tokenAddress
+            startTime: _startTime,
+            stopTime: _stopTime,
+            tokenAddress: _tokenAddress,
+            nftTokenId: _nftTokenId
         });
 
         /* Increment the next stream id. */
         nextStreamId = nextStreamId + uint256(1);
 
-        IERC20(tokenAddress).safeTransferFrom(_sender, address(this), deposit);
-        emit CreateStream(streamId, _sender, recipient, deposit, tokenAddress, startTime, stopTime);
+        IERC20(_tokenAddress).safeTransferFrom(_sender, address(this), _deposit);
+        emit CreateStream(streamId, _sender, _recipient, _nftTokenId, _deposit, _tokenAddress, _startTime, _stopTime);
         return streamId;
     }
 
@@ -348,7 +356,7 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
         if (recipientBalance > 0) token.safeTransfer(stream.recipient, recipientBalance);
         if (senderBalance > 0) token.safeTransfer(stream.sender, senderBalance);
 
-        emit CancelStream(streamId, stream.sender, stream.recipient, senderBalance, recipientBalance);
+        emit CancelStream(streamId, stream.sender, stream.recipient, stream.nftTokenId, senderBalance, recipientBalance);
         return true;
     }
 }

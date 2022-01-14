@@ -197,6 +197,178 @@ export const NETWORK = chainId => {
 
 export const SALIENT_YAGHT_STREAM_ABI = [
   {
+    inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "streamId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nftTokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "senderBalance",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "recipientBalance",
+        type: "uint256",
+      },
+    ],
+    name: "CancelStream",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "streamId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nftTokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "deposit",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "tokenAddress",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "startTime",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "stopTime",
+        type: "uint256",
+      },
+    ],
+    name: "CreateStream",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "streamId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "WithdrawFromStream",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "streamIdList",
+        type: "uint256[]",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "WithdrawFromStreams",
+    type: "event",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -231,7 +403,7 @@ export const SALIENT_YAGHT_STREAM_ABI = [
         internalType: "address",
         name: "who",
         type: "address",
-      }
+      },
     ],
     name: "balanceOfStreams",
     outputs: [
@@ -239,7 +411,7 @@ export const SALIENT_YAGHT_STREAM_ABI = [
         internalType: "uint256",
         name: "totalBalance",
         type: "uint256",
-      }
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -258,6 +430,55 @@ export const SALIENT_YAGHT_STREAM_ABI = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_sender",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_recipient",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_deposit",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_tokenAddress",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_startTime",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_stopTime",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_nftTokenId",
+        type: "uint256",
+      },
+    ],
+    name: "createStream",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "nonpayable",
@@ -332,6 +553,11 @@ export const SALIENT_YAGHT_STREAM_ABI = [
         name: "ratePerSecond",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "nftTokenId",
+        type: "uint256",
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -343,7 +569,7 @@ export const SALIENT_YAGHT_STREAM_ABI = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256"
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -412,7 +638,7 @@ export const SALIENT_YAGHT_STREAM_ABI = [
         internalType: "uint256[]",
         name: "streamIdList",
         type: "uint256[]",
-      }
+      },
     ],
     name: "withdrawFromStreams",
     outputs: [
@@ -420,7 +646,7 @@ export const SALIENT_YAGHT_STREAM_ABI = [
         internalType: "bool",
         name: "",
         type: "bool",
-      }
+      },
     ],
     stateMutability: "nonpayable",
     type: "function",

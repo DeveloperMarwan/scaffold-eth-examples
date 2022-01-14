@@ -37,10 +37,10 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   );
   console.log("After const salientYachtsNFTContract =...");
 
-  // mint reward tokens for the NFT - 240 tokens per year -> four years -> for 6000 NFT's
+  // mint reward tokens for the NFT - 2400 tokens per year -> ten years -> for 6000 NFT's
   await salientYachtsReward.mint(
     salientYachtsNFTContract.address,
-    ethers.utils.parseEther(240 * 4 * 6000 + "")
+    ethers.utils.parseEther(2400 * 10 * 6000 + "")
   );
 
   await salientYachtsNFTContract.toggleSaleActive();

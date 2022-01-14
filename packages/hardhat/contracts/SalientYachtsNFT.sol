@@ -61,7 +61,8 @@ contract SalientYachtsNFT is ERC721, ERC721Enumerable, Ownable {
             _safeMint(msg.sender, tokenId);
             console.log("buyYachtNFT: minted NFT with tokenId: %s", tokenId);
 
-            uint256 streamId = streamContract.createStream(address(this), msg.sender, tenYearDeposit, rewardContractAddress, startTime, stopTime);
+            uint256 streamId = streamContract.createStream(address(this), msg.sender, tenYearDeposit, rewardContractAddress, startTime, 
+                stopTime, tokenId);
             nftOwnerToTokenIdToStreamId[msg.sender][tokenId] = streamId;
             console.log("buyYachtNFT: created reward stream with streamId: %s", streamId);
         }
@@ -75,7 +76,7 @@ contract SalientYachtsNFT is ERC721, ERC721Enumerable, Ownable {
             //cancel the reward stream for "from"
             uint256 fromStreamId = nftOwnerToTokenIdToStreamId[from][tokenId];
             require(fromStreamId > 0, "From stream id not found");
-            (,,,,,uint256 oldStreamStopTime,uint256 oldStreamRemainingBalance,) = streamContract.getStream(fromStreamId);
+            (,,,,,uint256 oldStreamStopTime,uint256 oldStreamRemainingBalance,,uint256 oldStreamNftTokenId) = streamContract.getStream(fromStreamId);
             streamContract.cancelStream(fromStreamId);
             console.log("_beforeTokenTransfer cancelled stream: %s - from: %s", fromStreamId, from);
 
@@ -85,7 +86,8 @@ contract SalientYachtsNFT is ERC721, ERC721Enumerable, Ownable {
             uint256 duration = stopTime - startTime;
             uint256 streamAmt = oldStreamRemainingBalance - (oldStreamRemainingBalance % duration);
             IERC20(rewardContractAddress).approve(address(streamContract), tenYearDeposit);
-            uint256 toStreamId = streamContract.createStream(address(this), to, streamAmt, rewardContractAddress, startTime, stopTime);
+            uint256 toStreamId = streamContract.createStream(address(this), to, streamAmt, rewardContractAddress, startTime, stopTime, 
+                oldStreamNftTokenId);
             nftOwnerToTokenIdToStreamId[to][tokenId] = toStreamId;
             console.log("_beforeTokenTransfer created reward stream with streamId: %s for address: %s", toStreamId, to);
         }
