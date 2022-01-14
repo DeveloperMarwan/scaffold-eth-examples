@@ -27,8 +27,8 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 //
 // Select the network you want to deploy to here:
 //
-const defaultNetwork = "localhost";
-// const defaultNetwork = "fujiAvalanche";
+// const defaultNetwork = "localhost";
+const defaultNetwork = "fujiAvalanche";
 
 const mainnetGwei = 21;
 
@@ -246,7 +246,7 @@ module.exports = {
     },
     fujiAvalanche: {
       url: "https://api.avax-test.network/ext/bc/C/rpc",
-      gasPrice: 225000000000,
+      gasPrice: 325000000000,
       chainId: 43113,
       accounts: {
         mnemonic: mnemonic(),

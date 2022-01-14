@@ -195,6 +195,34 @@ contract VoteGovernorAlpha {
         return newProposal.id;
     }
 
+    function getProposalData(uint256 proposalId) public view 
+        returns (
+            uint256 proposalId_,
+            address proposer_,
+            uint256 startTime_,
+            uint256 endTime_,
+            uint256 startBlock_,
+            uint256 forVotes_,
+            uint256 againstVotes_,
+            bool canceled_,
+            bool executed_,
+            ProposalState state_
+        ) {
+        // this is a dummy change to force a recompile
+        require(proposalCount >= proposalId && proposalId > 0, "GovernorAlpha::getProposalData: invalid proposal id");
+        Proposal storage proposal = proposals[proposalId];
+        proposalId_ = proposal.id;
+        proposer_ = proposal.proposer;
+        startTime_ = proposal.startTime;
+        endTime_ = proposal.endTime;
+        startBlock_ = proposal.startBlock;
+        forVotes_ = proposal.forVotes;
+        againstVotes_ = proposal.againstVotes;
+        canceled_ = proposal.canceled;
+        executed_ = proposal.executed;
+        state_ = state(proposalId);
+    }
+
     function queue(uint256 proposalId) public {
         require(state(proposalId) == ProposalState.Succeeded, "GovernorAlpha::queue: proposal can only be queued if it is succeeded");
         Proposal storage proposal = proposals[proposalId];

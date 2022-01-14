@@ -22,8 +22,31 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   // transfer 20 vote tokens
   await voteToken.transfer(
     "0x7C04681be730c2f418884036b5D9Bb94573d71B1",
-    "20000000000000000000"
+    ethers.utils.parseEther("30")
   );
+
+  await voteToken.transfer(
+    "0xFa2905794A52cC086dcE056b441A21eB963CC7EF",
+    ethers.utils.parseEther("30")
+  );
+
+  await voteToken.transfer(
+    "0xD1766A94ceF16D6A893fA2C5dC210EE13Cc79b24",
+    ethers.utils.parseEther("30")
+  );
+
+  await voteToken.transfer(
+    "0x5755ce1779C4A071f9aEcd0042F224957c121E1C",
+    ethers.utils.parseEther("30")
+  );
+
+  await voteToken.transfer(
+    "0x140D36b05111B1108ABDAfDEF2cd03359FA239ff",
+    ethers.utils.parseEther("30")
+  );
+  // 0xD1766A94ceF16D6A893fA2C5dC210EE13Cc79b24
+  // 0x5755ce1779C4A071f9aEcd0042F224957c121E1C
+  // 0x140D36b05111B1108ABDAfDEF2cd03359FA239ff (William)
 
   await deploy("VoteGovernorFactory", {
     from: deployer,

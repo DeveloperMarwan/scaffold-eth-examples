@@ -589,7 +589,6 @@ function App(props) {
           <Col span={8}>
             <Ramp price={price} address={address} networks={NETWORKS} />
           </Col>
-
           <Col span={8} style={{ textAlign: "center", opacity: 0.8 }}>
             <GasGauge gasPrice={gasPrice} />
           </Col>

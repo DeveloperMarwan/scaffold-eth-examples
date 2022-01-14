@@ -619,6 +619,70 @@ export const GOVERNOR_ABI = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "proposalId",
+        type: "uint256",
+      },
+    ],
+    name: "getProposalData",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "proposalId_",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "proposer_",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "startTime_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "endTime_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "startBlock_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "forVotes_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "againstVotes_",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "canceled_",
+        type: "bool",
+      },
+      {
+        internalType: "bool",
+        name: "executed_",
+        type: "bool",
+      },
+      {
+        internalType: "enum VoteGovernorAlpha.ProposalState",
+        name: "state_",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ];
 
 export const VOTE_TOKEN_ABI = [
