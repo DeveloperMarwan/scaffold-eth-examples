@@ -22,10 +22,11 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   );
   console.log("After const salientYachtsReward =...");
 
+  const chainLinkPriceFeedAddr = "0x5498BB86BC934c8D34FDA08E81D444153d0D06aD"; // https://docs.chain.link/docs/avalanche-price-feeds/ (AVAX/USD)
   await deploy("SalientYachtsNFT", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [salientYachtsReward.address],
+    args: [salientYachtsReward.address, chainLinkPriceFeedAddr],
     log: true,
   });
   console.log("After await deploy SalientYachtsNFT...");
