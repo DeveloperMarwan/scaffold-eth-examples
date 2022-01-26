@@ -439,7 +439,8 @@ function App(props) {
     );
   }
 
-  const streamAddress = useContractReader(readContracts, "SalientYachtsNFT", "streamContract");
+  // const streamAddress = useContractReader(readContracts, "SalientYachtsNFT", "streamContract");
+  const streamAddress = useContractReader(readContracts, "SalientYachtsSYONE_v01", "streamContract");
   if (DEBUG) console.log("✅ streamAddress:", streamAddress);
 
   const theExternalContract = useExternalContractLoader(injectedProvider, streamAddress, SALIENT_YAGHT_STREAM_ABI);
@@ -510,7 +511,7 @@ function App(props) {
               }}
               to="/"
             >
-              SalientYachtsNFT
+              SalientYachtsSYONE_v01
             </Link>
           </Menu.Item>
           <Menu.Item key="/rewardstream">
@@ -544,7 +545,7 @@ function App(props) {
             */}
 
             <Contract
-              name="SalientYachtsNFT"
+              name="SalientYachtsSYONE_v01"
               price={price}
               signer={userSigner}
               provider={localProvider}

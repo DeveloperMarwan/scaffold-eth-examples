@@ -71,7 +71,8 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
         uint256 deposit,
         address tokenAddress,
         uint256 startTime,
-        uint256 stopTime
+        uint256 stopTime,
+        uint256 ratePerSecond
     );
 
     /**
@@ -94,7 +95,7 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
     );
 
     constructor() {
-        nextStreamId = 100000;
+        nextStreamId = 200000;
     }
 
     /**
@@ -272,7 +273,7 @@ contract SalientYachtsStream is ReentrancyGuard, Ownable {
         nextStreamId = nextStreamId + uint256(1);
 
         IERC20(_tokenAddress).safeTransferFrom(_sender, address(this), _deposit);
-        emit CreateStream(streamId, _sender, _recipient, _nftTokenId, _deposit, _tokenAddress, _startTime, _stopTime);
+        emit CreateStream(streamId, _sender, _recipient, _nftTokenId, _deposit, _tokenAddress, _startTime, _stopTime, vars.ratePerSecond);
         return streamId;
     }
 

@@ -68,3 +68,5 @@ yarn-error.log*
 # doc directory
 /doc
 *.txt
+yarn.lock
+yarn.lock

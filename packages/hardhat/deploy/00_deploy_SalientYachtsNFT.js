@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // deploy/00_deploy_your_contract.js
 
 const { ethers } = require("hardhat");
@@ -23,6 +24,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   console.log("After const salientYachtsReward =...");
 
   const chainLinkPriceFeedAddr = "0x5498BB86BC934c8D34FDA08E81D444153d0D06aD"; // https://docs.chain.link/docs/avalanche-price-feeds/ (AVAX/USD)
+  /*
   await deploy("SalientYachtsNFT", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
@@ -46,6 +48,32 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
   await salientYachtsNFTContract.toggleSaleActive();
   console.log("After salientYachtsNFTContract.toggleSaleActive()...");
+  */
+
+  await deploy("SalientYachtsSYONE_v01", {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+    from: deployer,
+    args: [salientYachtsReward.address, chainLinkPriceFeedAddr],
+    log: true,
+  });
+  console.log("After await deploy SalientYachtsSYONE_v01...");
+
+  // Getting a previously deployed contract
+  const salientYachtsSYONE_v01 = await ethers.getContract(
+    "SalientYachtsSYONE_v01",
+    deployer
+  );
+  console.log("After const salientYachtsSYONE_v01 =...");
+
+  // mint reward tokens for the NFT - 2400 tokens per year -> ten years -> for 6000 NFT's
+  await salientYachtsReward.mint(
+    salientYachtsSYONE_v01.address,
+    ethers.utils.parseEther(2400 * 10 * 6000 + "")
+  );
+
+  await salientYachtsSYONE_v01.toggleSaleActive();
+  console.log("After salientYachtsSYONE_v01.toggleSaleActive()...");
+
   /*  await YourContract.setPurpose("Hello");
   
     To take ownership of yourContract using the ownable library uncomment next line and add the 
@@ -91,4 +119,4 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   }
   */
 };
-module.exports.tags = ["salientYachtsNFTContract"];
+module.exports.tags = ["salientYachtsSYONE_v01"];
