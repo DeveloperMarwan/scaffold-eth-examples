@@ -14,14 +14,11 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
-    //assume Yacht price is $600,000 -> we will have 6000 tokens at $100 each
-    //assume AVAX is $100 (might considuer using Chainlink AVAX / USD) -> supply is 6000 tokens
-    //uint256 public constant mintPrice = 1 ether; // assume AVAX is $100 -> $1000 = 10 AVAX
     uint8   private constant mintLimit          = 20;
     uint256 private constant tenYearDeposit     = 2399999999999765395680;
     uint8   private constant nftPriceDecimals   = 18;
     uint256 private constant nftMintPrice       = 100 * (10 ** nftPriceDecimals); //mint price fixed at $100
-    uint16  private constant supplyLimit        = 6000; //assume Yacht price is $600,000 -> we will have 6000 tokens at $100 each
+    uint16  private constant supplyLimit        = 15000; //assume Yacht price is $1,500,000 -> we will have 15000 tokens at $100 each
     uint256 private constant TEN_YEARS          = 315569520; //10 years -> 315,569,520 seconds
     uint256 private constant NFT_FIXED_AVAX_PRICE = 10000000000000000; //0.01 AVAX (for testing purposes)
 
@@ -81,8 +78,9 @@ contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, O
         saleActive = !saleActive;
     }
 
-    function toggleUseFixedAvaxPrice() public onlyOwner {
+    function toggleUseFixedAvaxPrice() public returns (bool) {
         useFixedAvaxPrice = !useFixedAvaxPrice;
+        return useFixedAvaxPrice;
     }
 
     function setPriceCheckInterval(uint256 _priceCheckInterval) public onlyOwner {
@@ -99,7 +97,7 @@ contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, O
         require(mintedNFTScaledCount + (nftTypeData.multiplier * numberOfTokens)  <= supplyLimit, "Not enough yacht NFT's left");
         
         //mint the NFT(s)
-        mintedNFTScaledCount = nftTypeData.multiplier * numberOfTokens;
+        mintedNFTScaledCount += nftTypeData.multiplier * numberOfTokens;
         uint256 startTime = block.timestamp + 60; // 1 minute from now
         uint256 stopTime = block.timestamp + TEN_YEARS + 60; // 10 years and 1 minute from now
         uint256 deposit = numberOfTokens * nftTypeData.rewardAmount;
@@ -209,11 +207,11 @@ contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, O
         return _price;
     }
 
-    /*
-    function getCurrentPrice(NFTType nftType) public view returns (int256) {
-        NFTTypeData storage nftTypeData = nftTypeToData[nftType];
-        require(nftTypeData.isSet, "Can't obtain NFT price. Invalid NFT type");
-        return nftTypeData.nftPrice.price;
+    function getRemainingNFTBalance() public view returns (uint256) {
+        if (supplyLimit >= mintedNFTScaledCount) {
+            return supplyLimit - mintedNFTScaledCount;
+        } else {
+            return 0;
+        }
     }
-    */
 }
