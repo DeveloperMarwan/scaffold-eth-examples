@@ -27,12 +27,10 @@ contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, O
         Rare,
         Ultra
     }
-
     struct NFTPrice {
         int256 price;
         uint256 lastRetreivedAt;
     }
-
     struct NFTTypeData {
         string uriPart;
         uint256 mintPrice;
@@ -40,6 +38,11 @@ contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, O
         uint8   multiplier;
         NFTPrice nftPrice;
         bool    isSet;
+    }
+    struct NFTSale {
+        uint256 saleDate;
+        uint256 numberOfNfts;
+        NFTType nftType;
     }
 
     mapping(NFTType => NFTTypeData) private nftTypeToData;
@@ -53,6 +56,7 @@ contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, O
     uint256 private priceCheckInterval = 10 minutes;
     bool private useFixedAvaxPrice = true;
     uint256 private mintedNFTScaledCount;
+    mapping(bytes32 => NFTSale[]) private affiliateSales; 
     
     constructor(address _rewardContractAddress, address _priceFeedAddr) ERC721("Salient Yachts", "SYONE") {
         rewardContractAddress = _rewardContractAddress;
@@ -87,7 +91,7 @@ contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, O
         priceCheckInterval = _priceCheckInterval;
     }
 
-    function buyYachtNFT(uint numberOfTokens, NFTType nftType) public payable {
+    function buyYachtNFT(uint256 numberOfTokens, NFTType nftType, string memory affiliateId) public payable {
         require(saleActive, "Sale is not active");
         require(numberOfTokens <= mintLimit, "No more than 20 yacht NFT's at a time");
         uint256 currentNFTPrice = uint256(getLatestNFTPrice(nftPriceDecimals, nftType));
@@ -115,6 +119,12 @@ contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, O
                 stopTime, tokenId);
             nftOwnerToTokenIdToStreamId[msg.sender][tokenId] = streamId;
             console.log("buyYachtNFT: created reward stream with streamId: %s", streamId);
+        }
+
+        if (bytes(affiliateId).length > 0) {
+            bytes32 affIdHash = keccak256(abi.encode(affiliateId));
+            NFTSale memory theSale = NFTSale(block.timestamp, numberOfTokens, nftType);
+            affiliateSales[affIdHash].push(theSale);
         }
     }
 
@@ -213,5 +223,11 @@ contract SalientYachtsSYONE_v01 is ERC721, ERC721Enumerable, ERC721URIStorage, O
         } else {
             return 0;
         }
+    }
+
+    function getAffiliateSales(string memory inAffiliateId) public view returns (NFTSale[] memory) {
+        require(bytes(inAffiliateId).length > 0, "Affiliate Id is blank");
+        bytes32 affIdHash = keccak256(abi.encode(inAffiliateId));
+        return affiliateSales[affIdHash];
     }
 }
