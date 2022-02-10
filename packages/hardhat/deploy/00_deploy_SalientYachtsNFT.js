@@ -50,29 +50,29 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   console.log("After salientYachtsNFTContract.toggleSaleActive()...");
   */
 
-  await deploy("SalientYachtsSYONE_v01", {
+  await deploy("SalientYachtsSYONE_v02", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
     args: [salientYachtsReward.address, chainLinkPriceFeedAddr],
     log: true,
   });
-  console.log("After await deploy SalientYachtsSYONE_v01...");
+  console.log("After await deploy SalientYachtsSYONE_v02...");
 
   // Getting a previously deployed contract
-  const salientYachtsSYONE_v01 = await ethers.getContract(
-    "SalientYachtsSYONE_v01",
+  const salientYachtsSYONE_v02 = await ethers.getContract(
+    "SalientYachtsSYONE_v02",
     deployer
   );
-  console.log("After const salientYachtsSYONE_v01 =...");
+  console.log("After const salientYachtsSYONE_v02 =...");
 
   // mint reward tokens for the NFT - 2400 tokens per year -> ten years -> for 6000 NFT's
   await salientYachtsReward.mint(
-    salientYachtsSYONE_v01.address,
+    salientYachtsSYONE_v02.address,
     ethers.utils.parseEther(2400 * 10 * 6000 + "")
   );
 
-  await salientYachtsSYONE_v01.toggleSaleActive();
-  console.log("After salientYachtsSYONE_v01.toggleSaleActive()...");
+  await salientYachtsSYONE_v02.toggleSaleActive();
+  console.log("After salientYachtsSYONE_v02.toggleSaleActive()...");
 
   /*  await YourContract.setPurpose("Hello");
   
@@ -119,4 +119,4 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   }
   */
 };
-module.exports.tags = ["salientYachtsSYONE_v01"];
+module.exports.tags = ["salientYachtsSYONE_v02"];
