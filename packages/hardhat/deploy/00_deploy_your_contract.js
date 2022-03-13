@@ -16,10 +16,13 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     // args: [ "Hello", ethers.utils.parseEther("1.5") ],
     log: true,
   });
+  console.log("After VoteToken - Deploy");
 
   // Getting a previously deployed contract
   const voteToken = await ethers.getContract("VoteToken", deployer);
+
   // transfer 20 vote tokens
+  /*
   await voteToken.transfer(
     "0x7C04681be730c2f418884036b5D9Bb94573d71B1",
     ethers.utils.parseEther("30")
@@ -31,7 +34,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   );
 
   await voteToken.transfer(
-    "0xD1766A94ceF16D6A893fA2C5dC210EE13Cc79b24",
+    "0xe533a62026fd9F3F362c7506f7f2Bd5332e37BBa",
     ethers.utils.parseEther("30")
   );
 
@@ -44,19 +47,36 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     "0x140D36b05111B1108ABDAfDEF2cd03359FA239ff",
     ethers.utils.parseEther("30")
   );
+
+  await voteToken.transfer(
+    "0xe533a62026fd9F3F362c7506f7f2Bd5332e37BBa",
+    ethers.utils.parseEther("30")
+  );
+
+  console.log("After VoteToken - Transfers");
   // 0xD1766A94ceF16D6A893fA2C5dC210EE13Cc79b24
   // 0x5755ce1779C4A071f9aEcd0042F224957c121E1C
   // 0x140D36b05111B1108ABDAfDEF2cd03359FA239ff (William)
+  */
 
+  console.log("Before VoteGovernorFactory - Deploy");
   await deploy("VoteGovernorFactory", {
     from: deployer,
     args: [voteToken.address],
     log: true,
   });
+  console.log("After VoteGovernorFactory - Deploy");
+
   const voteGovernorFactory = await ethers.getContract(
     "VoteGovernorFactory",
     deployer
   );
+
+  await voteGovernorFactory.transferOwnership(
+    "0x5755ce1779C4A071f9aEcd0042F224957c121E1C"
+  );
+  console.log("After VoteGovernorFactory - transferOwnership");
+
   /*  await YourContract.setPurpose("Hello");
   
     To take ownership of yourContract using the ownable library uncomment next line and add the 
