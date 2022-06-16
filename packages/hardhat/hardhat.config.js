@@ -13,6 +13,8 @@ require("@eth-optimism/hardhat-ovm");
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 
+require("@openzeppelin/hardhat-upgrades");
+
 const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 
 /*

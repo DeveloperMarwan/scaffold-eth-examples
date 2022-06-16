@@ -51,8 +51,8 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-// const targetNetwork = NETWORKS.localhost;
-const targetNetwork = NETWORKS.fujiAvalanche;
+const targetNetwork = NETWORKS.localhost;
+// const targetNetwork = NETWORKS.fujiAvalanche;
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -442,7 +442,7 @@ function App(props) {
     );
   }
 
-  const myGovAddress = useContractReader(readContracts, "VoteGovernorFactory_V3", "getGovernorAddress", [address]);
+  const myGovAddress = useContractReader(readContracts, "VoteGovernorFactory_V2", "getGovernorAddress", [address]);
   if (DEBUG) console.log("✅ myGovAddress:", myGovAddress);
 
   const theGovContract = useExternalContractLoader(injectedProvider, myGovAddress, GOVERNOR_ABI);
@@ -511,7 +511,17 @@ function App(props) {
               }}
               to="/"
             >
-              VoteGovernorFactory_V3
+              VoteTokenFactory
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/govfactory">
+            <Link
+              onClick={() => {
+                setRoute("/govfactory");
+              }}
+              to="/govfactory"
+            >
+              VoteGovernorFactory_V2
             </Link>
           </Menu.Item>
           <Menu.Item key="/mygovernor">
@@ -539,7 +549,7 @@ function App(props) {
         <Switch>
           <Route exact path="/">
             <Contract
-              name="VoteGovernorFactory_V3"
+              name="VoteTokenFactory"
               price={price}
               signer={userSigner}
               provider={localProvider}
@@ -549,7 +559,26 @@ function App(props) {
             />
             <Events
               contracts={readContracts}
-              contractName="VoteGovernorFactory_V3"
+              contractName="VoteTokenFactory"
+              eventName="GovernorTokenCreated"
+              localProvider={localProvider}
+              mainnetProvider={mainnetProvider}
+              startBlock={1}
+            />
+          </Route>
+          <Route exact path="/govfactory">
+            <Contract
+              name="VoteGovernorFactory_V2"
+              price={price}
+              signer={userSigner}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+              contractConfig={contractConfig}
+            />
+            <Events
+              contracts={readContracts}
+              contractName="VoteGovernorFactory_V2"
               eventName="GovernorCreated"
               localProvider={localProvider}
               mainnetProvider={mainnetProvider}
@@ -584,7 +613,7 @@ function App(props) {
       </div>
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
-      {/*
+      
       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
         <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
@@ -621,7 +650,7 @@ function App(props) {
           </Col>
         </Row>
       </div>
-      */}
+
     </div>
   );
 }

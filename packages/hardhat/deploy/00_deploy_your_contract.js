@@ -1,6 +1,6 @@
 // deploy/00_deploy_your_contract.js
 
-const { ethers } = require("hardhat");
+const { ethers, upgrades } = require("hardhat");
 
 // const localChainId = "31337";
 
@@ -11,15 +11,23 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   console.log("chainId: ", chainId);
 
   await deploy("VoteToken", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    // args: [ "Hello", ethers.utils.parseEther("1.5") ],
     log: true,
   });
   console.log("After VoteToken - Deploy");
 
   // Getting a previously deployed contract
   const voteToken = await ethers.getContract("VoteToken", deployer);
+  /*
+  console.log("BEFORE VoteTokenV1 - Deploy");
+  const voteTokenV1Factory = await ethers.getContractFactory("VoteTokenV1");
+  console.log("VoteTokenV1Factory: ", voteTokenV1Factory);
+  const voteTokenV1 = await upgrades.deployProxy(voteTokenV1Factory, {
+    kind: "uups",
+  });
+  console.log("VoteTokenV1 - voteTokenV1: ", voteTokenV1);
+  console.log("AFTER VoteTokenV1 - Deploy");
+  */
 
   // transfer 20 vote tokens
   /*
@@ -58,24 +66,55 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   // 0x5755ce1779C4A071f9aEcd0042F224957c121E1C
   // 0x140D36b05111B1108ABDAfDEF2cd03359FA239ff (William)
   */
-
-  console.log("Before VoteGovernorFactory - Deploy");
-  await deploy("VoteGovernorFactory", {
+  console.log("Before VoteTokenFactory - Deploy");
+  await deploy("VoteTokenFactory", {
     from: deployer,
-    args: [voteToken.address],
+    args: [],
     log: true,
   });
-  console.log("After VoteGovernorFactory - Deploy");
-
-  const voteGovernorFactory = await ethers.getContract(
-    "VoteGovernorFactory",
+  console.log("After VoteTokenFactory - Deploy");
+  const voteTokenFactory = await ethers.getContract(
+    "VoteTokenFactory",
     deployer
   );
 
-  await voteGovernorFactory.transferOwnership(
+  console.log("Before VoteGovernorFactory_V3 - Deploy");
+  await deploy("VoteGovernorFactory_V3", {
+    from: deployer,
+    args: [voteTokenFactory.address],
+    log: true,
+  });
+  console.log("After VoteGovernorFactory_V3 - Deploy");
+
+  const voteGovernorFactory_v3 = await ethers.getContract(
+    "VoteGovernorFactory_V3",
+    deployer
+  );
+
+  await voteGovernorFactory_v3.transferOwnership(
     "0x5755ce1779C4A071f9aEcd0042F224957c121E1C"
   );
-  console.log("After VoteGovernorFactory - transferOwnership");
+  console.log("After VoteGovernorFactory_V3 - transferOwnership");
+
+  /*
+  console.log("Before VoteGovernorFactory_V2 - Deploy");
+  await deploy("VoteGovernorFactory_V2", {
+    from: deployer,
+    args: [],
+    log: true,
+  });
+  console.log("After VoteGovernorFactory_V2 - Deploy");
+
+  const voteGovernorFactory_v2 = await ethers.getContract(
+    "VoteGovernorFactory_V2",
+    deployer
+  );
+
+  await voteGovernorFactory_v2.transferOwnership(
+    "0x5755ce1779C4A071f9aEcd0042F224957c121E1C"
+  );
+  console.log("After VoteGovernorFactory_V2 - transferOwnership");
+  */
 
   /*  await YourContract.setPurpose("Hello");
   
@@ -122,4 +161,4 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   }
   */
 };
-module.exports.tags = ["voteToken", "voteGovernorFactory"];
+module.exports.tags = ["voteToken", "voteGovernorFactory_v3"];

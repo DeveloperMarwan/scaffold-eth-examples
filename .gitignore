@@ -68,3 +68,6 @@ yarn-error.log*
 # doc directory
 /doc
 *.txt
+packages/hardhat/.openzeppelin/unknown-31337.json
+packages/hardhat/contracts/YourContract.sol
+packages/hardhat/contracts/YourContract.sol

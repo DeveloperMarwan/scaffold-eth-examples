@@ -1,43 +1,24 @@
-const { ethers } = require("hardhat");
+const { ethers, upgrades } = require("hardhat");
 const { use, expect } = require("chai");
 const { solidity } = require("ethereum-waffle");
 
 use(solidity);
 
-describe("My Dapp", function () {
-  let myContract;
-
-  // quick fix to let gas reporter fetch data from gas station & coinmarketcap
-  before((done) => {
-    setTimeout(done, 2000);
+describe("VoteTokenV1", function () {
+  let voteTokenProxy;
+  it("deploys", async function () {
+    const voteTokenV1 = await ethers.getContractFactory("VoteTokenV1");
+    voteTokenProxy = await upgrades.deployProxy(voteTokenV1, { kind: "uups" });
+    console.log("deploys - voteTokenProxy", voteTokenProxy.address);
   });
-
-  describe("YourContract", function () {
-    it("Should deploy YourContract", async function () {
-      const YourContract = await ethers.getContractFactory("YourContract");
-
-      myContract = await YourContract.deploy();
-    });
-
-    describe("setPurpose()", function () {
-      it("Should be able to set a new purpose", async function () {
-        const newPurpose = "Test Purpose";
-
-        await myContract.setPurpose(newPurpose);
-        expect(await myContract.purpose()).to.equal(newPurpose);
-      });
-
-      // Uncomment the event and emit lines in YourContract.sol to make this test pass
-
-      /* it("Should emit a SetPurpose event ", async function () {
-        const [owner] = await ethers.getSigners();
-
-        const newPurpose = "Another Test Purpose";
-
-        expect(await myContract.setPurpose(newPurpose)).to.
-          emit(myContract, "SetPurpose").
-            withArgs(owner.address, newPurpose);
-      }); */
-    });
+  it("upgrades", async function () {
+    const voteTokenV2 = await ethers.getContractFactory("VoteTokenV2");
+    voteTokenProxy = await upgrades.upgradeProxy(voteTokenProxy, voteTokenV2);
+    console.log("upgrades - voteTokenProxy", voteTokenProxy.address);
+    let newVar = await voteTokenProxy.newVar();
+    console.log("newVar: ", newVar);
+    await voteTokenProxy.setNewVar(10);
+    newVar = await voteTokenProxy.newVar();
+    console.log("newVar: ", newVar);
   });
 });
