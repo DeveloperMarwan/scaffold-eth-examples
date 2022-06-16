@@ -24,6 +24,13 @@ export const NETWORKS = {
     rpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
     blockExplorer: "https://etherscan.io/",
   },
+  testBinance: {
+    name: "testBinance",
+    color: "#7003DD",
+    chainId: 97,
+    rpcUrl: process.env.REACT_APP_PROVIDER, // process.env.REACT_APP_PROVIDER, url: "https://speedy-nodes-nyc.moralis.io/040127b735114e52736e407f/bsc/testnet",
+    blockExplorer: "https://testnet.bscscan.com/",
+  },
   kovan: {
     name: "kovan",
     color: "#7003DD",

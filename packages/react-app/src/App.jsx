@@ -48,8 +48,9 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS.fujiAvalanche;
 // const targetNetwork = NETWORKS.localhost;
+// const targetNetwork = NETWORKS.fujiAvalanche;
+const targetNetwork = NETWORKS.testBinance;
 
 // 😬 Sorry for all the console logging
 const DEBUG = false;
@@ -439,8 +440,7 @@ function App(props) {
     );
   }
 
-  // const streamAddress = useContractReader(readContracts, "SalientYachtsNFT", "streamContract");
-  const streamAddress = useContractReader(readContracts, "SalientYachtsSYONE_v02", "streamContract");
+  const streamAddress = useContractReader(readContracts, "SalientYachtsSYONE_v07", "streamContract");
   if (DEBUG) console.log("✅ streamAddress:", streamAddress);
 
   const theExternalContract = useExternalContractLoader(injectedProvider, streamAddress, SALIENT_YAGHT_STREAM_ABI);
@@ -511,7 +511,7 @@ function App(props) {
               }}
               to="/"
             >
-              SalientYachtsSYONE_v02
+              SalientYachtsSYONE_v07
             </Link>
           </Menu.Item>
           <Menu.Item key="/rewardstream">
@@ -539,7 +539,7 @@ function App(props) {
         <Switch>
           <Route exact path="/">
             <Contract
-              name="SalientYachtsSYONE_v02"
+              name="SalientYachtsSYONE_v07"
               price={price}
               signer={userSigner}
               provider={localProvider}
@@ -549,7 +549,7 @@ function App(props) {
             />
             <Events
               contracts={readContracts}
-              contractName="SalientYachtsSYONE_v02"
+              contractName="SalientYachtsSYONE_v07"
               eventName="AffiliateSale"
               localProvider={localProvider}
               mainnetProvider={mainnetProvider}

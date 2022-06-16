@@ -11,6 +11,9 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
   console.log("chainId: ", chainId);
+  const ownerAddress = "0xe533a62026fd9F3F362c7506f7f2Bd5332e37BBa"; // DeveloperMarwan MM
+  const DEFAULT_ADMIN_ROLE =
+    "0x0000000000000000000000000000000000000000000000000000000000000000";
 
   await deploy("SalientYachtsReward", {
     from: deployer,
@@ -23,63 +26,51 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   );
   console.log("After const salientYachtsReward =...");
 
-  const chainLinkPriceFeedAddr = "0x5498BB86BC934c8D34FDA08E81D444153d0D06aD"; // https://docs.chain.link/docs/avalanche-price-feeds/ (AVAX/USD)
+  // grant MINTER_ROLE to ownerAddress
   /*
-  await deploy("SalientYachtsNFT", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
-    from: deployer,
-    args: [salientYachtsReward.address, chainLinkPriceFeedAddr],
-    log: true,
-  });
-  console.log("After await deploy SalientYachtsNFT...");
-
-  // Getting a previously deployed contract
-  const salientYachtsNFTContract = await ethers.getContract(
-    "SalientYachtsNFT",
-    deployer
+  await salientYachtsReward.grantRole(
+    ethers.utils.solidityKeccak256(["string"], ["MINTER_ROLE"]),
+    ownerAddress
   );
-  console.log("After const salientYachtsNFTContract =...");
+  console.log("After salientYachtsReward.grantRole(MINTER_ROLE)");
 
-  // mint reward tokens for the NFT - 2400 tokens per year -> ten years -> for 6000 NFT's
-  await salientYachtsReward.mint(
-    salientYachtsNFTContract.address,
-    ethers.utils.parseEther(2400 * 10 * 6000 + "")
-  );
-
-  await salientYachtsNFTContract.toggleSaleActive();
-  console.log("After salientYachtsNFTContract.toggleSaleActive()...");
+  await salientYachtsReward.grantRole(DEFAULT_ADMIN_ROLE, ownerAddress);
+  console.log("After salientYachtsReward.grantRole(DEFAULT_ADMIN_ROLE)");
   */
 
-  await deploy("SalientYachtsSYONE_v02", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+  const chainLinkPriceFeedAddr = "0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526"; // (BNB / USD) -- "0x5498BB86BC934c8D34FDA08E81D444153d0D06aD"; // https://docs.chain.link/docs/avalanche-price-feeds/ (AVAX/USD)
+
+  await deploy("SalientYachtsSYONE_v07", {
     from: deployer,
     args: [salientYachtsReward.address, chainLinkPriceFeedAddr],
     log: true,
   });
-  console.log("After await deploy SalientYachtsSYONE_v02...");
+  console.log("After await deploy SalientYachtsSYONE_v07...");
 
   // Getting a previously deployed contract
-  const salientYachtsSYONE_v02 = await ethers.getContract(
-    "SalientYachtsSYONE_v02",
+  const salientYachtsSYONE_v07 = await ethers.getContract(
+    "SalientYachtsSYONE_v07",
     deployer
   );
-  console.log("After const salientYachtsSYONE_v02 =...");
+  console.log("After const salientYachtsSYONE_v07 =...");
 
-  // mint reward tokens for the NFT - 2400 tokens per year -> ten years -> for 6000 NFT's
+  // mint reward tokens for the NFT - 240 tokens per year -> ten years -> for 20000 NFT's
+  /*
   await salientYachtsReward.mint(
-    salientYachtsSYONE_v02.address,
-    ethers.utils.parseEther(2400 * 10 * 6000 + "")
+    salientYachtsSYONE_v07.address,
+    ethers.utils.parseEther(240 * 10 * 20000 + "")
   );
+  console.log("After await salientYachtsReward.mint(...)");
+  */
 
-  await salientYachtsSYONE_v02.toggleSaleActive();
-  console.log("After salientYachtsSYONE_v02.toggleSaleActive()...");
+  // await salientYachtsSYONE_v07.toggleSaleActive();
+  // console.log("After salientYachtsSYONE_v02.toggleSaleActive()...");
 
-  /*  await YourContract.setPurpose("Hello");
-  
-    To take ownership of yourContract using the ownable library uncomment next line and add the 
-    address you want to be the owner. 
-    // yourContract.transferOwnership(YOUR_ADDRESS_HERE);
+  // transfer ownership of the salientYachtsSYONE_v07 contract to ownerAddress
+  await salientYachtsSYONE_v07.transferOwnership(ownerAddress);
+  console.log("After await salientYachtsSYONE_v07.transferOwnership(...)");
 
+  /* 
     //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
   */
 
@@ -119,4 +110,4 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   }
   */
 };
-module.exports.tags = ["salientYachtsSYONE_v02"];
+module.exports.tags = ["salientYachtsSYONE_v07"];
